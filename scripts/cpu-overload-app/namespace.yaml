@@ -1,0 +1,11 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: client-acc-qa
+  labels:
+    kubernetes.io/metadata.name: client-acc-qa
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active

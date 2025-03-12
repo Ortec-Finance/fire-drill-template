@@ -1,0 +1,11 @@
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - networkpolicies.yaml
+
+namespace: client-acc
+
+images:
+  - name: elastic-overload
+    newName: elastic-overload
+    newTag: latest

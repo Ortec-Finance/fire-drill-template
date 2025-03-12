@@ -1,0 +1,11 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: opal-acc
+  labels:
+    kubernetes.io/metadata.name: opal-acc
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active

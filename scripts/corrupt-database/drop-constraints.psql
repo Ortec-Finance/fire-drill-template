@@ -1,0 +1,27 @@
+DO $$
+DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (SELECT constraint_name, table_schema, table_name
+              FROM information_schema.table_constraints
+              WHERE constraint_type IN ('FOREIGN KEY', 'PRIMARY KEY', 'UNIQUE', 'CHECK')
+                AND table_schema NOT IN ('pg_catalog', 'information_schema')
+                AND table_name != 'databasechangelog'
+                AND table_name != 'databasechangeloglock')
+				
+	LOOP
+        BEGIN
+            RAISE NOTICE 'Attempting to drop constraint % on table %.%',
+                         r.constraint_name, r.table_schema, r.table_name;
+            EXECUTE 'ALTER TABLE ' || quote_ident(r.table_schema) || '.' || quote_ident(r.table_name) ||
+                    ' DROP CONSTRAINT ' || quote_ident(r.constraint_name);
+            RAISE NOTICE 'Successfully dropped constraint % on table %.%',
+                         r.constraint_name, r.table_schema, r.table_name;
+        EXCEPTION
+            WHEN OTHERS THEN
+                RAISE WARNING 'Failed to drop constraint % on table %.%',
+                              r.constraint_name, r.table_schema, r.table_name;
+        END;
+    END LOOP;
+    RAISE NOTICE 'Script execution completed.';
+END $$;

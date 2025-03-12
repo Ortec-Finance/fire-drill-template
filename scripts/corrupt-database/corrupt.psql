@@ -1,0 +1,52 @@
+DO $$ 
+DECLARE 
+    v_table_name TEXT;
+    v_column_name TEXT;
+    v_data_type TEXT;
+    sql_command TEXT;
+BEGIN 
+    FOR v_table_name, v_column_name, v_data_type IN (
+        SELECT c.table_name, c.column_name, c.data_type
+        FROM information_schema.columns c
+        WHERE c.table_schema = 'public'
+        AND c.table_schema NOT IN ('pg_catalog')
+		AND c.column_name NOT LIKE '%id%'
+		AND c.table_name NOT LIKE 'databasechangelog'
+
+	)
+    LOOP
+        BEGIN  -- Start of exception block
+            -- Construct the SQL command based on data type
+            IF v_data_type = 'character varying' OR v_data_type = 'text' THEN
+                sql_command := FORMAT(
+                    'UPDATE %I SET %I = 
+                        CHR(65 + FLOOR(RANDOM() * 26)::INT) || 
+                        CHR(97 + FLOOR(RANDOM() * 26)::INT) || 
+                        CHR(48 + FLOOR(RANDOM() * 10)::INT);', 
+                    v_table_name, v_column_name
+                );
+            ELSIF v_data_type = 'integer' THEN
+                sql_command := FORMAT(
+                    'UPDATE %I SET %I = FLOOR(RANDOM() * 1000)::INT;', 
+                    v_table_name, v_column_name
+                );
+            ELSIF v_data_type = 'date' THEN
+                sql_command := FORMAT(
+                    'UPDATE %I SET %I = CURRENT_DATE - FLOOR(RANDOM() * 365)::INT;', 
+                    v_table_name, v_column_name
+                );
+            ELSE
+                -- Skip other data types or add more conditions for other types
+                CONTINUE;
+            END IF;
+            
+            -- Execute the SQL command
+            EXECUTE sql_command;
+			RAISE NOTICE 'Corrupted table % column %', v_table_name, v_column_name;
+
+        EXCEPTION
+            WHEN OTHERS THEN
+                RAISE NOTICE 'Error updating table % column %: %', v_table_name, v_column_name, SQLERRM;
+        END;  -- End of exception block
+    END LOOP;
+END $$;

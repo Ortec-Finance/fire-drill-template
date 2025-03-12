@@ -1,0 +1,8 @@
+resources:
+  - client-a
+  - client-b
+
+images:
+  - name: memory-eater
+    newName: memory-eater
+    newTag: latest

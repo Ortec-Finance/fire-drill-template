@@ -1,0 +1,79 @@
+resources:
+  - deployment.yaml
+  - namespace.yaml
+  - service.yaml
+
+namespace: client-acc-qa
+
+images:
+  - name: cpu-eater
+    newName: cpu-eater
+    newTag: latest
+
+patches:
+# ### TARGET MACHINE
+#   - patch: |-
+#       - op: add
+#         path: "/spec/template/spec/nodeSelector"
+#         value:
+#           ortec-finance/application: client-staging
+#     target:
+#       group: apps
+#       kind: Deployment
+#       name: api
+#       version: v1
+
+#   - patch: |-
+#       - op: add
+#         path: "/spec/template/spec/tolerations"
+#         value:
+#           - key: "ortec-finance"
+#             operator: "Equal"
+#             value: "client-staging-application"
+#             effect: "NoSchedule"
+#     target:
+#       group: apps
+#       kind: Deployment
+#       name: api
+#       version: v1
+
+
+### CPU
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: 0m
+    target:
+      group: apps
+      kind: Deployment
+      name: api
+      version: v1
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: 0m
+    target:
+      group: apps
+      kind: Deployment
+      name: api
+      version: v1
+
+### MEMORY
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: 0G
+    target:
+      group: apps
+      kind: Deployment
+      name: api
+      version: v1
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 0G
+    target:
+      group: apps
+      kind: Deployment
+      name: api
+      version: v1

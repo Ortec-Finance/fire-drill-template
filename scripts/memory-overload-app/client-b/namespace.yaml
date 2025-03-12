@@ -1,0 +1,11 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: client-b-dev
+  labels:
+    kubernetes.io/metadata.name: client-b-dev
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active

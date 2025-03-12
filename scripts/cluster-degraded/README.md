@@ -1,0 +1,2 @@
+# Cluster Degradation
+This yaml will cause the machines to reboot periodically. It is difficult to figure out why certain nodes are suddenly going offline as no logs or metrics can indicate a MachineConfiguration being set.
